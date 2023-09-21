@@ -141,3 +141,11 @@
   padding: 8px 12px;
   cursor: pointer;
 }
+
+.send-button:disabled {
+  background-color: #ccc; /* Background color when disabled */
+  color: #666; /* Text color when disabled */
+  cursor: not-allowed; /* Change cursor to not-allowed */
+  border: 1px solid #ccc; /* Border style when disabled */
+  opacity: 0.7; /* Reduce opacity when disabled (optional) */
+}

@@ -10,8 +10,8 @@ const initialMessages = [
   { id: 2, text: "Hi, I'm looking for a new laptop", isCustomer: true },
 ];
 
-function ChatWidget() {
-  const [messages, setMessages] = useState(initialMessages);
+function ChatWidget({ messages, setMessages, sendMessage, chat }) {
+  // const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
 
@@ -27,12 +27,12 @@ function ChatWidget() {
     );
   };
 
-  const handleUserMessageSubmit = (e) => {
-    e.preventDefault();
+  const handleUserMessageSubmit = () => {
     if (newMessage.trim() === "") return;
-    receiveMessage(newMessage, true);
+    const messageId = `${Math.random() * 1000}`;
+    sendMessage(messageId, newMessage);
+    sendMessage(newMessage);
     setNewMessage("");
-    setTimeout(sendAgentResponse, 1000);
   };
 
   useEffect(() => {
@@ -42,6 +42,13 @@ function ChatWidget() {
 
   const toggleMinimize = () => {
     setIsMinimized((prevMinimized) => !prevMinimized);
+  };
+
+  const handleKeyDown = (e) => {
+    console.log(e.key);
+    if (e.key === "Enter") {
+      handleUserMessageSubmit();
+    }
   };
 
   return (
@@ -79,18 +86,24 @@ function ChatWidget() {
           </div>
         ))}
       </div>
-      <form className="message-input-form" onSubmit={handleUserMessageSubmit}>
+      <div className="message-input-form">
         <input
           type="text"
           className="message-input"
           placeholder="Type your message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
-        <button type="submit" className="send-button">
+        <button
+          type="button"
+          onClick={handleUserMessageSubmit}
+          className="send-button"
+          disabled={newMessage.trim() === ""}
+        >
           Send
         </button>
-      </form>
+      </div>
     </div>
   );
 }
