@@ -20,17 +20,17 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
     setCustomerSDK(sdk);
 
     return () => {
-        sdk.disconnect();
+      sdk.disconnect();
     };
   }, []);
 
-//   const init = () => {
-//     const sdk = new CustomerSDK.init({
-//       licenseId: 16142280,
-//       clientId: "cb29ee529b302062032f83fa653c33e0",
-//     });
-//     setCustomerSDK(sdk);
-//   };
+  //   const init = () => {
+  //     const sdk = new CustomerSDK.init({
+  //       licenseId: 16142280,
+  //       clientId: "cb29ee529b302062032f83fa653c33e0",
+  //     });
+  //     setCustomerSDK(sdk);
+  //   };
 
   useEffect(() => {
     // Subscribe to chat events when customerSDK is available
@@ -52,7 +52,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
         let message = {
           id: event.id,
           text: event.text,
-          sender: isAgent(author) ? "agent" : "user",
+          sender: isAgent(author) ? "agent" : "customer",
         };
         setMessages((oldState) => [...oldState, message]);
       });
@@ -62,6 +62,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
       customerSDK.on("user_joined_chat", noop("user_joined_chat"));
       customerSDK.on("user_left_chat", noop("user_left_chat"));
       customerSDK.on("customer_id", (id) => {
+        console.log("customer_id: ", id);
         setCustomerId(id);
       });
       customerSDK.on("user_data", (user) => {
@@ -73,7 +74,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
           ...oldState,
           ...newState,
         }));
-        state.users[user.id] = user;
+        // state.users[user.id] = user;
       });
       customerSDK.on("disconnected", ({ reason }) => {
         console.log("disconnected: ", reason);
@@ -123,7 +124,8 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
 
   const sendMessage = (id, text) => {
     const message = { customId: id, text, type: "message" };
-
+    console.log("customerId: ", customerId);
+    console.log("state: ", state);
     let chatId = state.chat?.id;
     if (state?.chat?.active === false) {
       startChat([
@@ -134,6 +136,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
     } else {
       customerSDK.sendEvent({ chatId, event: message }).then(
         (confirmedMessage) => {
+          console.log("sendMessage confirmedMessage: ", confirmedMessage);
           const newMessage = {
             id: confirmedMessage.id,
             text: confirmedMessage.text,
@@ -149,7 +152,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
   };
 
   const noop = (args) => {
-    // console.log("noop: ", args);
+    console.log("noop: ", args);
   };
 
   const handleNewEvent = (newEvent) => {
@@ -173,37 +176,45 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
   const handleConnected = () => {
     console.log("connected");
     if (!customerSDK) {
+      console.log("no customerSDK");
       return;
     }
     handleCustomerStatusChange();
   };
 
   const handleCustomerStatusChange = () => {
-    customerSDK.listChats().then(({ chatsSummary, totalChats }) => {
-      if (state.chat) {
-        return;
-      }
+    console.log("handleCustomerStatusChange");
+    customerSDK
+      .listChats()
+      .then(({ chatsSummary, totalChats }) => {
+        console.log("chatsSummary: ", chatsSummary);
+        console.log("totalChats: ", totalChats);
+        if (state.chat) {
+          return;
+        }
 
-      if (totalChats > 0) {
-        const chat = chatsSummary[0];
-        setState((oldState) => ({ ...oldState, chat }));
-      } else {
-        customerSDK
-          .startChat({
-            chat: {
-              thread: {
-                channelType: "web",
-                authorName: "John Doe",
-                text: "Hello, I have a question about your product.",
+        if (totalChats > 0) {
+          const chat = chatsSummary[0];
+          setState((oldState) => ({ ...oldState, chat }));
+        } else {
+          customerSDK
+            .startChat({
+              chat: {
+                thread: {},
               },
-            },
-          })
-          .then((chat) => {
-            console.log("chat: ", chat);
-            setState((oldState) => ({ ...oldState, chat: chat.chat }));
-          });
-      }
-    });
+            })
+            .then((chat) => {
+              console.log("chat: ", chat);
+              setState((oldState) => ({ ...oldState, chat: chat.chat }));
+            })
+            .catch((err) => {
+              console.log("startChat err: ", err);
+            });
+        }
+      })
+      .catch((err) => {
+        console.log("handleCustomerStatusChange err: ", err);
+      });
   };
 
   const loadInitialHistory = (chat) => {
@@ -223,19 +234,16 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
   };
 
   const getMessagesFromThreads = (threads) => {
-    // console.log("getMessagesFromThreads: ", threads);
     return threads
       .map(({ events }) => events || [])
       .reduce((acc, current) => [...acc, ...current], [])
       .filter((event) => event.type === "message")
       .map((event) => {
         const author = state.users[event.authorId];
-        // console.log("author: ", author);
-        // console.log("isAgent: ", isAgent(author));
         return {
           id: event.id,
           text: event.text,
-          sender: isAgent(author) ? "agent" : "user",
+          sender: isAgent(author) ? "agent" : "customer",
         };
       });
   };
@@ -259,6 +267,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
         .next()
         .then(
           ({ value: { threads }, done }) => {
+            console.log("loadHistory: ", threads, done);
             if (!threads) {
               return;
             }

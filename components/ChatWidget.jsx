@@ -5,33 +5,15 @@ import "./ChatWidget.css"; // Import your CSS file
 import Image from "next/image";
 import { MINIMIZE_ICON, USER_ICON } from "@/constants";
 
-const initialMessages = [
-  { id: 1, text: "Hello, how can I help you today?", isCustomer: false },
-  { id: 2, text: "Hi, I'm looking for a new laptop", isCustomer: true },
-];
-
-function ChatWidget({ messages, setMessages, sendMessage, chat }) {
+function ChatWidget({ messages, sendMessage }) {
   // const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
-
-  const receiveMessage = (messageText, isCustomer = false) => {
-    const newMessage = { id: Date.now(), text: messageText, isCustomer };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-  };
-
-  const sendAgentResponse = () => {
-    receiveMessage(
-      "Thank you for contacting us! How can we assist you today?",
-      false
-    );
-  };
 
   const handleUserMessageSubmit = () => {
     if (newMessage.trim() === "") return;
     const messageId = `${Math.random() * 1000}`;
     sendMessage(messageId, newMessage);
-    sendMessage(newMessage);
     setNewMessage("");
   };
 
@@ -45,7 +27,6 @@ function ChatWidget({ messages, setMessages, sendMessage, chat }) {
   };
 
   const handleKeyDown = (e) => {
-    console.log(e.key);
     if (e.key === "Enter") {
       handleUserMessageSubmit();
     }
@@ -78,10 +59,7 @@ function ChatWidget({ messages, setMessages, sendMessage, chat }) {
       </div>
       <div id="chat-container" className="chat-container">
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`message ${message.isCustomer ? "customer" : "agent"}`}
-          >
+          <div key={message.id} className={`message ${message.sender}`}>
             {message.text}
           </div>
         ))}
