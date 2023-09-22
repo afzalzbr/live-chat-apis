@@ -52,7 +52,7 @@
 }
 
 .header-status {
-  color: #007bff;
+  color: #1295d8;
   font-size: 12px;
 }
 
@@ -81,8 +81,8 @@
   border: 1px solid #ccc;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  font-family: Arial, sans-serif;
-  height: 500px;
+  font-family: "Noto Sans", sans-serif;
+  height: 600px;
   display: flex;
   flex-direction: column;
 }
@@ -103,10 +103,11 @@
   margin: 5px;
   border-radius: 5px;
   max-width: 70%;
+  color: #000;
 }
 
 .customer {
-  background-color: #007bff;
+  background-color: #1295d8;
   color: #fff;
   align-self: flex-end;
 }
@@ -115,6 +116,22 @@
   background-color: #f4f4f4;
   color: #333;
   align-self: flex-start;
+}
+
+.rich_message {
+  max-width: 70%;
+}
+
+.system_message {
+  padding: 10px 20px;
+  margin: 5px;
+  max-width: 70%;
+  color: #666;
+  align-self: center;
+  background-color: #e5e7eb;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Message Input Form Styles */
@@ -134,7 +151,7 @@
 }
 
 .send-button {
-  background-color: #007bff;
+  background-color: #1295d8;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -148,4 +165,81 @@
   cursor: not-allowed; /* Change cursor to not-allowed */
   border: 1px solid #ccc; /* Border style when disabled */
   opacity: 0.7; /* Reduce opacity when disabled (optional) */
+}
+
+/* Card Container */
+.card {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 5px;
+}
+
+/* Card Image */
+.card-image img {
+  width: 100%;
+  height: auto;
+}
+
+/* Card Message */
+.card-message {
+  padding: 15px;
+  text-align: left;
+}
+
+.card-message h2 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: #111111;
+}
+
+.card-message p {
+  font-size: 14px;
+  color: #6e6e6e;
+}
+
+/* Card Buttons */
+.card-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  /* background-color: #f5f5f5; */
+}
+
+.primary-button {
+  background-color: #1295d8;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  line-height: 1.4em;
+}
+
+.default-button {
+  background-color: #f3f9fd;
+  color: #073b56;
+  border: none;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  line-height: 1.4em;
+}
+
+/* Button Hover Effect */
+.primary-button:hover {
+  background-color: #0d6fa2;
+}
+
+.default-button:hover {
+  color: #073b56;
+  background-color: #dbeff9;
 }

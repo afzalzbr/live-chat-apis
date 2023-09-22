@@ -151,6 +151,28 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
     }
   };
 
+  const sendRichMessagePostback = (postback) => {
+    const { postbackId, threadId, eventId } = postback;
+    let chatId = state.chat?.id;
+
+    customerSDK
+      .sendRichMessagePostback({
+        chatId: chatId,
+        threadId: threadId,
+        eventId: eventId,
+        postback: {
+          id: postbackId,
+          toggled: true,
+        },
+      })
+      .then(() => {
+        console.log("success");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const noop = (args) => {
     console.log("noop: ", args);
   };
@@ -234,18 +256,28 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
   };
 
   const getMessagesFromThreads = (threads) => {
-    return threads
+    let allMessages = threads
       .map(({ events }) => events || [])
       .reduce((acc, current) => [...acc, ...current], [])
-      .filter((event) => event.type === "message")
       .map((event) => {
         const author = state.users[event.authorId];
-        return {
+        let messageObject = {
           id: event.id,
           text: event.text,
-          sender: isAgent(author) ? "agent" : "customer",
+          type: event.type,
+          threadId: event.threadId,
         };
+        if (event.type === "message") {
+          messageObject.sender = isAgent(author) ? "agent" : "customer";
+        }
+        if (event.type === "rich_message") {
+          messageObject.sender = "agent";
+          messageObject.type = event.type;
+          messageObject.elements = event.elements;
+        }
+        return messageObject;
       });
+    return allMessages;
   };
 
   const appendMessagesFromThreads = (threads) => {
@@ -293,6 +325,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
       <ChatWidget
         chat={state.chat}
         sendMessage={sendMessage}
+        sendRichMessagePostback={sendRichMessagePostback}
         messages={messages}
         setMessages={setMessages}
       />
