@@ -140,7 +140,7 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
           const newMessage = {
             id: confirmedMessage.id,
             text: confirmedMessage.text,
-            sender: "user",
+            sender: "customer",
           };
           setMessages((oldState) => [...oldState, newMessage]);
         },
@@ -283,9 +283,9 @@ const ChatWidgetWrapperSDK = ({ clientId, licenseId }) => {
     });
   };
 
-  //   if (!customerSDK) {
-  //     return <div>Loading...</div>;
-  //   }
+  if (!customerSDK) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
